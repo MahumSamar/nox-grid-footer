@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NOX Footer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #000000;
+      --fg: #f1efe9;
+      --muted: rgba(241, 239, 233, 0.62);
+      --line: rgba(241, 239, 233, 0.28);
+      --dash: 6px;
+      --gap: 6px;
+      --gutter: clamp(16px, 4.3vw, 56px);
+      --cols: 4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--fg); }
+    body {
+      font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ---------- Footer shell ---------- */
+    .footer {
+      position: relative;
+      height: 100vh;
+      height: 100svh;
+      min-height: 620px;
+      width: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- Background video (Higgsfield / Seedance 2.0) ----------
+       Sits in its own area below the text and is anchored to its TOP edge,
+       so the rock spires (the focal point) are always visible and never under the links. */
+    .footer__media {
+      position: relative;
+      order: 2;
+      flex: 1 1 auto;
+      min-height: 0;
+      margin-top: clamp(16px, 3vh, 40px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .footer__media video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 0%;
+      display: block;
+      /* feather the top edge into the page */
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%);
+              mask-image: linear-gradient(to bottom, transparent 0%, #000 10%);
+    }
+
+    /* ---------- Code-generated dashed grid lines ---------- */
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .grid-lines__h {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: clamp(36px, 6.3vh, 56px);
+      height: 1px;
+      background: repeating-linear-gradient(to right, var(--line) 0 var(--dash), transparent var(--dash) calc(var(--dash) + var(--gap)));
+      transform-origin: left center;
+      transform: scaleX(0);
+    }
+    .grid-lines__v {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      height: 60%; /* JS sets the real height so lines stop where the landscape begins */
+      background: repeating-linear-gradient(to bottom, var(--line) 0 var(--dash), transparent var(--dash) calc(var(--dash) + var(--gap)));
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+              mask-image: linear-gradient(to bottom, #000 0%, #000 72%, transparent 100%);
+      clip-path: inset(0 0 100% 0);
+    }
+    .is-live .grid-lines__h {
+      transition: transform 1.6s cubic-bezier(.65,.05,.25,1);
+      transform: scaleX(1);
+    }
+    .is-live .grid-lines__v {
+      transition: clip-path 1.8s cubic-bezier(.65,.05,.25,1);
+      clip-path: inset(0 0 0 0);
+    }
+
+    /* ---------- Content columns ---------- */
+    .footer__inner {
+      position: relative;
+      z-index: 2;
+      margin: 0 var(--gutter);
+      padding-top: clamp(84px, 13.5vh, 120px);
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      text-align: center;
+    }
+    .col { padding: 0 12px; }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+      font-size: clamp(30px, 3vw, 40px);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .brand__mark {
+      display: block;
+      width: 1.02em;
+      height: 1.02em;
+      flex: none;
+      opacity: .35;
+      transform: rotate(-24deg) scale(.45);
+      transition: transform 1s cubic-bezier(.2,.9,.2,1), opacity .6s ease;
+    }
+    .brand__mark path { fill: var(--fg); }
+    .is-live .brand__mark { opacity: 1; transform: none; }
+
+    .tagline {
+      margin: 22px auto 0;
+      max-width: 15em;
+      font-size: 15px;
+      line-height: 1.35;
+      color: var(--muted);
+    }
+    .copy {
+      margin-top: 22px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .col h3 {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-top: 2px;
+    }
+    .col ul { list-style: none; margin-top: 14px; }
+    .col li + li { margin-top: 13px; }
+
+    .link {
+      position: relative;
+      display: inline-block;
+      font-size: 15px;
+      color: var(--muted);
+      padding-bottom: 2px;
+      transition: color .3s ease;
+    }
+    .link::before {
+      content: "\2192";
+      position: absolute;
+      right: 100%;
+      top: 0;
+      margin-right: 6px;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity .3s ease, transform .35s cubic-bezier(.2,.9,.2,1);
+    }
+    .link::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: right center;
+      transition: transform .4s cubic-bezier(.2,.9,.2,1);
+    }
+    .link:hover, .link:focus-visible { color: var(--fg); outline: none; }
+    .link:hover::before, .link:focus-visible::before { opacity: 1; transform: none; }
+    .link:hover::after, .link:focus-visible::after { transform: scaleX(1); transform-origin: left center; }
+
+    /* ---------- Per-character text reveal ---------- */
+    .split .w { display: inline-block; white-space: nowrap; }
+    .split .ch {
+      display: inline-block;
+      opacity: 0;
+      filter: blur(6px);
+      transform: translateY(4px);
+    }
+    .is-live .split .ch {
+      transition: opacity .5s ease, filter .6s ease, transform .6s cubic-bezier(.2,.9,.2,1);
+      transition-delay: calc(var(--d, 0) * 1ms);
+      opacity: 1;
+      filter: blur(0);
+      transform: none;
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 720px) {
+      :root { --cols: 2; }
+      .footer__inner { row-gap: 40px; padding-top: 84px; }
+      .col--brand {
+        grid-column: 1 / -1;
+        margin: 0 1px;
+        padding: 12px 12px 16px;
+        background: var(--bg); /* hides the centre grid line behind the brand block */
+      }
+      /* stacked columns are taller, so let the footer grow past one screen if needed */
+      .footer { height: auto; min-height: 100vh; min-height: 100svh; }
+      .footer__media { min-height: 380px; }
+    }
+    @media (max-width: 480px) {
+      .footer__media { min-height: 260px; }
+      .footer__inner { row-gap: 32px; padding-top: 72px; }
+      .brand { font-size: 30px; }
+      .tagline, .copy, .link { font-size: 14px; }
+      .col h3 { font-size: 16px; }
+      .col li + li { margin-top: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .grid-lines__h, .grid-lines__v, .brand__mark, .split .ch {
+        transition: none !important;
+        transform: none !important;
+        clip-path: none !important;
+        opacity: 1 !important;
+        filter: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <footer class="footer" id="footer">
+    <div class="footer__media" aria-hidden="true">
+      <video id="bg-video" muted playsinline preload="auto"
+        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260929_040915_1684f4cf-061d-4833-8ed5-854d812ec5df.mp4"></video>
+    </div>
+
+    <div class="grid-lines" id="grid-lines" aria-hidden="true">
+      <span class="grid-lines__h"></span>
+    </div>
+
+    <div class="footer__inner" id="footer-inner">
+      <div class="col col--brand">
+        <a href="#" class="brand" aria-label="NOX home">
+          <svg class="brand__mark" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 128 192 L 128 256 L 64.5 256 L 32 223 L 0 192 L 0 128 L 64 128 Z M 256 192 L 256 256 L 192.5 256 L 160 223 L 128 192 L 128 128 L 192 128 Z M 128 64 L 128 128 L 64.5 128 L 32 95 L 0 64 L 0 0 L 64 0 Z M 256 64 L 256 128 L 192.5 128 L 160 95 L 128 64 L 128 0 L 192 0 Z"/>
+          </svg>
+          <span class="split">NOX</span>
+        </a>
+        <p class="tagline split">The verifiable engine for autonomous work</p>
+        <p class="copy split">© 2026 NOX Grid, Inc.</p>
+      </div>
+
+      <nav class="col" aria-label="Systems">
+        <h3 class="split">Systems</h3>
+        <ul>
+          <li><a class="link split" href="#">Pipeline</a></li>
+          <li><a class="link split" href="#">Workflows</a></li>
+          <li><a class="link split" href="#">Controls</a></li>
+        </ul>
+      </nav>
+
+      <nav class="col" aria-label="Network">
+        <h3 class="split">Network</h3>
+        <ul>
+          <li><a class="link split" href="#">Story</a></li>
+          <li><a class="link split" href="#">Culture</a></li>
+          <li><a class="link split" href="#">Inquire</a></li>
+        </ul>
+      </nav>
+
+      <nav class="col" aria-label="Knowledge">
+        <h3 class="split">Knowledge</h3>
+        <ul>
+          <li><a class="link split" href="#">Insights</a></li>
+          <li><a class="link split" href="#">Field Manuals</a></li>
+          <li><a class="link split" href="#">News</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const footer = document.getElementById('footer');
+      const inner = document.getElementById('footer-inner');
+      const lines = document.getElementById('grid-lines');
+      const video = document.getElementById('bg-video');
+
+      /* Split text into characters with a staggered delay per column */
+      const cols = inner.querySelectorAll('.col');
+      cols.forEach((col, ci) => {
+        let i = 0;
+        col.querySelectorAll('.split').forEach((el) => {
+          const text = el.textContent;
+          el.setAttribute('aria-label', text);
+          el.textContent = '';
+          text.split(' ').forEach((word, wi) => {
+            if (wi > 0) el.appendChild(document.createTextNode(' '));
+            const w = document.createElement('span');
+            w.className = 'w';
+            w.setAttribute('aria-hidden', 'true');
+            for (const c of word) {
+              const s = document.createElement('span');
+              s.className = 'ch';
+              s.textContent = c;
+              s.style.setProperty('--d', 250 + ci * 180 + i * 22);
+              w.appendChild(s);
+              i++;
+            }
+            el.appendChild(w);
+            i++;
+          });
+        });
+      });
+
+      /* Build vertical dashed lines at every column boundary (code-generated, not in the video) */
+      function buildLines() {
+        lines.querySelectorAll('.grid-lines__v').forEach((n) => n.remove());
+        const count = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--cols'), 10) || 4;
+        const r = inner.getBoundingClientRect();
+        const fr = footer.getBoundingClientRect();
+        const left = r.left - fr.left;
+        const w = r.width;
+        /* lines run down to just inside the top of the video, then fade out */
+        const media = footer.querySelector('.footer__media');
+        const stop = media.offsetTop + media.offsetHeight * 0.12;
+        for (let k = 0; k <= count; k++) {
+          const v = document.createElement('span');
+          v.className = 'grid-lines__v';
+          v.style.left = Math.round(left + (w * k) / count) + 'px';
+          v.style.height = Math.round(stop) + 'px';
+          v.style.transitionDelay = (k * 90) + 'ms';
+          lines.appendChild(v);
+        }
+      }
+      buildLines();
+      let rt;
+      window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(buildLines, 120); });
+
+      /* Start everything when the footer enters view */
+      function start() {
+        if (footer.classList.contains('is-live')) return;
+        requestAnimationFrame(() => footer.classList.add('is-live'));
+        try { video.currentTime = 0; } catch (e) {}
+        const p = video.play();
+        if (p && p.catch) p.catch(() => {});
+      }
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => { if (e.isIntersecting) { start(); io.disconnect(); } });
+        }, { threshold: 0.35 });
+        io.observe(footer);
+      } else {
+        start();
+      }
+    })();
+  </script>
+</body>
+</html>
